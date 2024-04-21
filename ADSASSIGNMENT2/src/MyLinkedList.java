@@ -1,19 +1,20 @@
-import java.util.Arrays;
+import java.util.Iterator;
 
 public class MyLinkedList<T> implements MyList<T> {
-    private Node head;
-    private Node tail;
-    private int size;
-
     private static class Node<T> {
         T item;
-        Node next;
+        Node<T> next;
 
         Node(T item) {
             this.item = item;
             this.next = null;
         }
     }
+
+
+    private Node<T> head;
+    private Node<T> tail;
+    private int size;
 
     public MyLinkedList() {
         head = null;
@@ -37,10 +38,10 @@ public class MyLinkedList<T> implements MyList<T> {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index out of bounds");
         }
-        if (index == 0) {
-            addFirst(item);
-        } else if (index == size) {
+        if (index == size) {
             addLast(item);
+        } else if (index == 0) {
+            addFirst(item);
         } else {
             Node<T> newNode = new Node<>(item);
             Node<T> prevNode = getNode(index - 1);
@@ -78,35 +79,38 @@ public class MyLinkedList<T> implements MyList<T> {
 
     @Override
     public T get(int index) {
-        checkIndex(index);
-        Node<T> current = getNode(index);
-        return current.item;
+        return getNode(index).item;
     }
 
     @Override
     public T getFirst() {
         if (isEmpty()) {
-            throw new IllegalStateException("List is empty");
+            throw new IllegalStateException("List mistake");
         }
-        return (T) head.item;
+        return head.item;
     }
 
     @Override
     public T getLast() {
         if (isEmpty()) {
-            throw new IllegalStateException("List is empty");
+            throw new IllegalStateException("List mistake");
         }
-        return (T) tail.item;
+        return tail.item;
     }
 
     @Override
     public void remove(int index) {
-        checkIndex(index);
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index mistake");
+        }
         if (index == 0) {
             removeFirst();
         } else {
             Node<T> prevNode = getNode(index - 1);
             prevNode.next = prevNode.next.next;
+            if (index == size - 1) {
+                tail = prevNode;
+            }
             size--;
         }
     }
@@ -126,7 +130,7 @@ public class MyLinkedList<T> implements MyList<T> {
     @Override
     public void removeLast() {
         if (isEmpty()) {
-            throw new IllegalStateException("List is empty");
+            throw new IllegalStateException("List mistake");
         }
         if (size == 1) {
             head = null;
@@ -141,8 +145,7 @@ public class MyLinkedList<T> implements MyList<T> {
 
     @Override
     public void sort() {
-        // Implement sorting algorithm
-        // For simplicity, let's not implement sorting in this example
+        // Implement sorting algorithm (e.g., merge sort, quicksort, etc.)
     }
 
     @Override
@@ -198,7 +201,7 @@ public class MyLinkedList<T> implements MyList<T> {
 
     private Node<T> getNode(int index) {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index out of bounds");
+            throw new IndexOutOfBoundsException("Index mistake");
         }
         Node<T> current = head;
         for (int i = 0; i < index; i++) {
@@ -207,13 +210,32 @@ public class MyLinkedList<T> implements MyList<T> {
         return current;
     }
 
-    private void checkIndex(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index out of bounds");
-        }
-    }
-
     private boolean isEmpty() {
         return size == 0;
+    }
+
+    // Iterator implementation
+    @Override
+    public Iterator<T> iterator() {
+        return new MyLinkedListIterator();
+    }
+
+    private class MyLinkedListIterator implements Iterator<T> {
+        private Node<T> current = head;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new java.util.NoSuchElementException();
+            }
+            T item = current.item;
+            current = current.next;
+            return item;
+        }
     }
 }
