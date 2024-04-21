@@ -88,7 +88,7 @@ public class MyLinkedList<T> implements MyList<T> {
         if (isEmpty()) {
             throw new IllegalStateException("List is empty");
         }
-        return head.item;
+        return (T) head.item;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class MyLinkedList<T> implements MyList<T> {
         if (isEmpty()) {
             throw new IllegalStateException("List is empty");
         }
-        return tail.item;
+        return (T) tail.item;
     }
 
     @Override
